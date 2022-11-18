@@ -7,6 +7,7 @@ package servidor.hlc.ej3_sala_de_chat_tcp.vista;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -26,7 +27,11 @@ public class Ventana_Cliente extends javax.swing.JFrame {
     public Ventana_Cliente() {
         initComponents();
         
-        nick = JOptionPane.showInputDialog("Ingrese su nick o nombre de usuario:");
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
+        while(nick == null || nick.equals("")){
+            nick = JOptionPane.showInputDialog("Ingrese su nick o nombre de usuario:");
+        }
         
         try {
             miPanelInicio = new Panel_Cliente(nick);

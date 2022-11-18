@@ -4,10 +4,9 @@
  */
 package servidor.hlc.ej3_sala_de_chat_tcp.vista;
 
-import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,20 +19,27 @@ public class Panel_Cliente extends javax.swing.JPanel {
 
     private String nick;
     private Socket cliente;
+    private DataInputStream flujoEntrada;
+    private DataOutputStream flujoSalida;
 
     /**
      * Creates new form Panel_Cliente
      */
     public Panel_Cliente(String nick) throws IOException {
         initComponents();
+        
+        this.nick = nick;
+        
         lblUsuario.setText("Chat de " + nick);
         
         cliente = new Socket("localhost", 6070);
         
-        PrintWriter flujoSalida = new PrintWriter(cliente.getOutputStream(), true);
-        flujoSalida.println(nick);
+        flujoEntrada = new DataInputStream(cliente.getInputStream());
+        flujoSalida = new DataOutputStream(cliente.getOutputStream());
         
-        HiloCliente hiloCliente = new HiloCliente(cliente, txtChatGrupal);
+        flujoSalida.writeUTF(nick);
+        
+        HiloCliente hiloCliente = new HiloCliente(cliente, txtChatGrupal, nick);
         
         hiloCliente.start();
         
@@ -121,20 +127,16 @@ public class Panel_Cliente extends javax.swing.JPanel {
                 .addContainerGap(17, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    //BufferedReader flujoEntrada = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
-    //PrintWriter flujoSalida = new PrintWriter(cliente.getOutputStream(), true);
-    
+ 
     private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
         
         try {
             
             if (!tfMensaje.getText().equals("")) {
 
-                PrintWriter flujoSalida = new PrintWriter(cliente.getOutputStream(), true);
-                flujoSalida.println(nick);
-                flujoSalida.println(tfMensaje.getText());
-                flujoSalida.close();
+                flujoSalida.writeUTF(tfMensaje.getText());
+                flujoSalida.flush();
+                tfMensaje.setText("");
                 
             }
             
@@ -147,8 +149,23 @@ public class Panel_Cliente extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEnviarActionPerformed
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-
-        System.exit(0);
+        
+        try {
+            
+            flujoSalida.writeUTF("Ha salido " + nick + " de la sala>\n");
+            
+            flujoEntrada.close();
+            flujoSalida.close();
+            
+            System.out.println("CLIENTE CERRADO");
+            
+            System.exit(0);
+        
+        } catch (IOException ex) {
+            
+            Logger.getLogger(Panel_Cliente.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }
 
     }//GEN-LAST:event_btnSalirActionPerformed
 

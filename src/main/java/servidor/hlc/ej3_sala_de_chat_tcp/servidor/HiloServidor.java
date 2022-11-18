@@ -4,12 +4,9 @@
  */
 package servidor.hlc.ej3_sala_de_chat_tcp.servidor;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,15 +18,15 @@ import java.util.logging.Logger;
 public class HiloServidor extends Thread{
     private static String chatGrupal = "";
     private Socket conexionCliente;
-    private BufferedReader flujoEntrada;
-    private PrintWriter flujoSalida;
-    private Boolean salir = false;
+    private DataInputStream flujoEntrada;
+    private DataOutputStream difusionSalida, flujoSalida;
+    private Boolean salir = false, sesion = false;
     private String nick;
 
     public HiloServidor(Socket conexionCliente) throws IOException {
         this.conexionCliente = conexionCliente;
-        this.flujoEntrada = new BufferedReader(new InputStreamReader(conexionCliente.getInputStream()));
-        this.flujoSalida =  new PrintWriter(conexionCliente.getOutputStream(), true);
+        flujoEntrada = new DataInputStream(conexionCliente.getInputStream());
+        flujoSalida = new DataOutputStream(conexionCliente.getOutputStream());
     }
     
     @Override
@@ -37,29 +34,47 @@ public class HiloServidor extends Thread{
         
         try {
             
-            nick = flujoEntrada.readLine();
-            
-            chatGrupal += "Ha entrado " + nick + " a la sala>";
-            flujoSalida.println(chatGrupal);
-            flujoSalida.flush();
-            
-            /*
-            while (!salir) {                
-                String mensajeCliente = flujoEntrada.readLine();
-            
-                chatGrupal += nick + "> " + mensajeCliente + "\n";
+            while (!salir || Servidor.listaConexiones.size() > 0) {
+                
+                if(!sesion){
+                    nick = flujoEntrada.readUTF();
 
-                PrintWriter difusionSalida = null;
-                for(Socket cli : Servidor.listaConexiones){
-                    difusionSalida =  new PrintWriter(cli.getOutputStream(), true);
-                    difusionSalida.println(chatGrupal);
+                    chatGrupal += "Ha entrado " + nick + " a la sala>\n";
+                    
+                    sesion = true;
                 }
-                difusionSalida.close();
+                else {
+                    String mensajeCliente = flujoEntrada.readUTF();
+                    
+                    if(mensajeCliente.equals("Ha salido " + nick + " de la sala>\n")){
+                        chatGrupal += mensajeCliente;
+                        flujoSalida.writeUTF(mensajeCliente);
+                        flujoSalida.flush();
+                        salir = true;
+                        Servidor.listaConexiones.remove(conexionCliente);
+                    }
+                    else{
+                        chatGrupal += nick + "> " + mensajeCliente + "\n";
+                    }
+                    
+                }
+                
+                for(Socket cli : Servidor.listaConexiones){
+                    difusionSalida =  new DataOutputStream(cli.getOutputStream());
+                    difusionSalida.writeUTF(chatGrupal);
+                    difusionSalida.flush();
+                }
+                
+                System.out.println("Tamaño: " + Servidor.listaConexiones.size());
+                System.out.println(chatGrupal);
+                
             }
-            */
+            
+            System.out.println("HILO SERVIDOR CERRADO");
             
             flujoEntrada.close();
             flujoSalida.close();
+            //difusionSalida.close();
             conexionCliente.close();
             
         } catch (IOException ex) {
