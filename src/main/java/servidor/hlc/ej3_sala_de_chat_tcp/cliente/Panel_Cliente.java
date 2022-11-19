@@ -139,8 +139,6 @@ public class Panel_Cliente extends javax.swing.JPanel {
             flujoSalida.writeUTF("/exit");
             
             flujoSalida.close();
-            
-            System.exit(0);
         
         } catch (IOException ex) {
             

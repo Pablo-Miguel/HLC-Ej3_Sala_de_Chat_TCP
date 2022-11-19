@@ -58,6 +58,8 @@ public class HiloCliente extends Thread {
             System.out.println("Se ha cerrado el socket");
             //Logger.getLogger(HiloCliente.class.getName()).log(Level.SEVERE, null, ex);
 
+        } finally {
+            System.exit(0);
         }
 
     }
