@@ -1,4 +1,8 @@
-servidor\hlc\ej3_sala_de_chat_tcp\vista\Ventana_Cliente.class
-servidor\hlc\ej3_sala_de_chat_tcp\vista\Panel_Cliente.class
-servidor\hlc\ej3_sala_de_chat_tcp\HLCEj3_Sala_de_Chat_TCP.class
+servidor\hlc\ej3_sala_de_chat_tcp\vista\Panel_Cliente$1.class
 servidor\hlc\ej3_sala_de_chat_tcp\vista\Ventana_Cliente$1.class
+servidor\hlc\ej3_sala_de_chat_tcp\vista\Ventana_Cliente.class
+servidor\hlc\ej3_sala_de_chat_tcp\servidor\HiloServidor.class
+servidor\hlc\ej3_sala_de_chat_tcp\vista\Panel_Cliente.class
+servidor\hlc\ej3_sala_de_chat_tcp\servidor\Servidor.class
+servidor\hlc\ej3_sala_de_chat_tcp\vista\HiloCliente.class
+servidor\hlc\ej3_sala_de_chat_tcp\vista\Panel_Cliente$2.class

@@ -8,8 +8,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -21,10 +19,12 @@ public class HiloServidor extends Thread{
     private DataInputStream flujoEntrada;
     private DataOutputStream difusionSalida, flujoSalida;
     private Boolean salir = false, sesion = false;
-    private String nick;
+    private String nick, mensajeCliente;
+    private Panel_Servidor panel;
 
-    public HiloServidor(Socket conexionCliente) throws IOException {
+    public HiloServidor(Socket conexionCliente, Panel_Servidor panel) throws IOException {
         this.conexionCliente = conexionCliente;
+        this.panel = panel;
         flujoEntrada = new DataInputStream(conexionCliente.getInputStream());
         flujoSalida = new DataOutputStream(conexionCliente.getOutputStream());
     }
@@ -44,13 +44,11 @@ public class HiloServidor extends Thread{
                     sesion = true;
                 }
                 else {
-                    String mensajeCliente = flujoEntrada.readUTF();
+                    mensajeCliente = flujoEntrada.readUTF();
                     
-                    if(mensajeCliente.equals("Ha salido " + nick + " de la sala>\n")){
-                        chatGrupal += mensajeCliente;
-                        flujoSalida.writeUTF(mensajeCliente);
-                        flujoSalida.flush();
+                    if(mensajeCliente.equals("/exit")){
                         salir = true;
+                        chatGrupal += "Ha salido " + nick + " de la sala>\n";
                         Servidor.listaConexiones.remove(conexionCliente);
                     }
                     else{
@@ -65,23 +63,26 @@ public class HiloServidor extends Thread{
                     difusionSalida.flush();
                 }
                 
-                System.out.println("Tamaño: " + Servidor.listaConexiones.size());
-                System.out.println(chatGrupal);
+                panel.getLblOnline().setText("Personas online en el chat de texto: " + Servidor.listaConexiones.size());
+                panel.getTxtChat().setText(chatGrupal);
                 
             }
             
-            System.out.println("HILO SERVIDOR CERRADO");
+            flujoSalida.writeUTF(mensajeCliente);
+            flujoSalida.flush();
             
             flujoEntrada.close();
             flujoSalida.close();
-            //difusionSalida.close();
+            difusionSalida.close();
             conexionCliente.close();
             
         } catch (IOException ex) {
             
-            Logger.getLogger(HiloServidor.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Se ha cerrado el socket");
+            //Logger.getLogger(HiloServidor.class.getName()).log(Level.SEVERE, null, ex);
             
         }
         
     }
+    
 }

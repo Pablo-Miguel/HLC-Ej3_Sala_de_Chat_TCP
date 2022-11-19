@@ -9,6 +9,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>18</maven.compiler.source>
         <maven.compiler.target>18</maven.compiler.target>
-        <exec.mainClass>servidor.hlc.ej3_sala_de_chat_tcp.HLCEj3_Sala_de_Chat_TCP</exec.mainClass>
+        <exec.mainClass>servidor.hlc.ej3_sala_de_chat_tcp.cliente.Ventana_Cliente</exec.mainClass>
     </properties>
 </project>

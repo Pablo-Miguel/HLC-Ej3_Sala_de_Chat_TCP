@@ -2,48 +2,42 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package servidor.hlc.ej3_sala_de_chat_tcp.vista;
+package servidor.hlc.ej3_sala_de_chat_tcp.servidor;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
  *
- * @author Dam
+ * @author Nitro
  */
-public class Ventana_Cliente extends javax.swing.JFrame {
+public class Ventana_Servidor extends javax.swing.JFrame {
     
     private JPanel panelActivo;
-    private Panel_Cliente miPanelInicio;
-    private String nick;
+    private Panel_Servidor miPanelInicio;
     
     /**
-     * Creates new form Ventana_Cliente
+     * Creates new form Ventana_Servidor
      */
-    public Ventana_Cliente() {
+    public Ventana_Servidor() {
         initComponents();
         
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
-        while(nick == null || nick.equals("")){
-            nick = JOptionPane.showInputDialog("Ingrese su nick o nombre de usuario:");
-        }
-        
         try {
-            miPanelInicio = new Panel_Cliente(nick);
+            miPanelInicio = new Panel_Servidor();
+        
+            this.getContentPane().add(miPanelInicio);
+            miPanelInicio.setSize(this.getSize());
+            miPanelInicio.setVisible(true);
+            
         } catch (IOException ex) {
-            Logger.getLogger(Ventana_Cliente.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Ventana_Servidor.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        panelActivo = miPanelInicio;
-        
-        this.getContentPane().add(panelActivo);
-        panelActivo.setSize(this.getSize());
-        panelActivo.setVisible(true);
     }
     
     public void cambiarPanel(JPanel panel){
@@ -77,7 +71,7 @@ public class Ventana_Cliente extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 427, Short.MAX_VALUE)
+            .addGap(0, 418, Short.MAX_VALUE)
         );
 
         pack();
@@ -100,20 +94,20 @@ public class Ventana_Cliente extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Servidor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Servidor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Servidor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Ventana_Cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Ventana_Servidor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Ventana_Cliente().setVisible(true);
+                new Ventana_Servidor().setVisible(true);
             }
         });
     }

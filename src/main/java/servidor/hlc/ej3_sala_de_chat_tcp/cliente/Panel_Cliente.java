@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package servidor.hlc.ej3_sala_de_chat_tcp.vista;
+package servidor.hlc.ej3_sala_de_chat_tcp.cliente;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -17,9 +17,7 @@ import java.util.logging.Logger;
  */
 public class Panel_Cliente extends javax.swing.JPanel {
 
-    private String nick;
     private Socket cliente;
-    private DataInputStream flujoEntrada;
     private DataOutputStream flujoSalida;
 
     /**
@@ -28,18 +26,15 @@ public class Panel_Cliente extends javax.swing.JPanel {
     public Panel_Cliente(String nick) throws IOException {
         initComponents();
         
-        this.nick = nick;
-        
         lblUsuario.setText("Chat de " + nick);
         
         cliente = new Socket("localhost", 6070);
         
-        flujoEntrada = new DataInputStream(cliente.getInputStream());
         flujoSalida = new DataOutputStream(cliente.getOutputStream());
         
         flujoSalida.writeUTF(nick);
         
-        HiloCliente hiloCliente = new HiloCliente(cliente, txtChatGrupal, nick);
+        HiloCliente hiloCliente = new HiloCliente(cliente, txtChatGrupal);
         
         hiloCliente.start();
         
@@ -66,6 +61,12 @@ public class Panel_Cliente extends javax.swing.JPanel {
         lblUsuario.setText("Chat de Admin");
         lblUsuario.setToolTipText("");
 
+        tfMensaje.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfMensajeKeyPressed(evt);
+            }
+        });
+
         btnEnviar.setText("Enviar");
         btnEnviar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -79,9 +80,6 @@ public class Panel_Cliente extends javax.swing.JPanel {
         jScrollPane1.setViewportView(txtChatGrupal);
 
         btnSalir.setText("Salir");
-        btnSalir.setMaximumSize(new java.awt.Dimension(72, 23));
-        btnSalir.setMinimumSize(new java.awt.Dimension(72, 23));
-        btnSalir.setPreferredSize(new java.awt.Dimension(72, 23));
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSalirActionPerformed(evt);
@@ -130,6 +128,39 @@ public class Panel_Cliente extends javax.swing.JPanel {
  
     private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
         
+        enviar();
+
+    }//GEN-LAST:event_btnEnviarActionPerformed
+
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+        
+        try {
+            
+            flujoSalida.writeUTF("/exit");
+            
+            flujoSalida.close();
+            
+            System.exit(0);
+        
+        } catch (IOException ex) {
+            
+            Logger.getLogger(Panel_Cliente.class.getName()).log(Level.SEVERE, null, ex);
+            
+        }
+
+    }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void tfMensajeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfMensajeKeyPressed
+        
+        if(evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+            
+            enviar();
+            
+        }
+        
+    }//GEN-LAST:event_tfMensajeKeyPressed
+
+    private void enviar(){
         try {
             
             if (!tfMensaje.getText().equals("")) {
@@ -145,30 +176,7 @@ public class Panel_Cliente extends javax.swing.JPanel {
             Logger.getLogger(Panel_Cliente.class.getName()).log(Level.SEVERE, null, ex);
             
         }
-
-    }//GEN-LAST:event_btnEnviarActionPerformed
-
-    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-        
-        try {
-            
-            flujoSalida.writeUTF("Ha salido " + nick + " de la sala>\n");
-            
-            flujoEntrada.close();
-            flujoSalida.close();
-            
-            System.out.println("CLIENTE CERRADO");
-            
-            System.exit(0);
-        
-        } catch (IOException ex) {
-            
-            Logger.getLogger(Panel_Cliente.class.getName()).log(Level.SEVERE, null, ex);
-            
-        }
-
-    }//GEN-LAST:event_btnSalirActionPerformed
-
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEnviar;

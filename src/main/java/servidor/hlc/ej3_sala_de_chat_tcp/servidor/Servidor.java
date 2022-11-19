@@ -8,34 +8,61 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
- * @author Dam
+ * @author Nitro
  */
-public class Servidor {
+public class Servidor extends Thread {
     
     public static ArrayList<Socket> listaConexiones;
-    
-    public static void main(String[] args) throws IOException {
-        
+    private Panel_Servidor panel;
+    private Boolean salir = false;
+
+    public Servidor(Panel_Servidor panel) throws IOException {
+        this.panel = panel;
         listaConexiones = new ArrayList<Socket>();
+    }
+
+    public Boolean getSalir() {
+        return salir;
+    }
+
+    public void setSalir(Boolean salir) {
+        this.salir = salir;
+    }
+    
+    @Override
+    public void run(){        
         
-        int puerto = 6070;
+        try {
+            
+            int puerto = 6070;
+            
+            ServerSocket socketServidor = new ServerSocket(puerto);
+            
+            panel.getTxtChat().setText("Servidor encendido...\nEscuchando en el puerto: " + socketServidor.getLocalPort());
+            
+            while(!salir){
+                
+                Socket conexionCliente = socketServidor.accept();
+                
+                listaConexiones.add(conexionCliente);
+                
+                HiloServidor hiloServidor = new HiloServidor(conexionCliente, panel);
+                
+                hiloServidor.start();
+                
+            }
+            
+            socketServidor.close();
+            
+        } catch (IOException ex) {
+            
+            Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
         
-        ServerSocket socketServidor = new ServerSocket(puerto);
-        
-        while(true){
-            System.out.println("Escuchando en el puerto: " + socketServidor.getLocalPort());
-            
-            Socket conexionCliente = socketServidor.accept();
-            
-            listaConexiones.add(conexionCliente);
-            
-            HiloServidor hiloServidor = new HiloServidor(conexionCliente);
-            
-            hiloServidor.start();
-            
         }
         
     }
